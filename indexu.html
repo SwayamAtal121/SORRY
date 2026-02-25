@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            /* A very faint fallback color just in case photos take a moment to load */
+            background-color: #fff5f7; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            color: #4a4a4a;
+            min-height: 100vh;
+            overflow-x: hidden; /* Prevents scrollbar if tilted photos poke out */
+        }
+
+        /* --- BACKGROUND COLLAGE STYLES --- */
+        .background-collage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Pushes photos behind everything else */
+            pointer-events: none; /* Ensures she can't click the background */
+        }
+
+        .bg-photo {
+            position: absolute;
+            width: 20vw; /* Responsive width */
+            max-width: 220px; /* Max size so they don't get too big on desktops */
+            height: auto;
+            border: 8px solid white; /* Polaroid border look */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+            opacity: 0.85; /* Slightly faded so main content pops */
+        }
+
+        /* --- ASYMMETRICAL POSITIONING --- */
+        /* Left Side */
+        .p1 { top: 5%; left: -2%; transform: rotate(-15deg); }
+        .p2 { top: 40%; left: 3%; transform: rotate(8deg) scale(1.1); z-index: 2;}
+        .p3 { bottom: 10%; left: 0%; transform: rotate(-20deg); }
+
+        /* Right Side */
+        .p4 { top: 8%; right: 1%; transform: rotate(12deg); }
+        .p5 { top: 45%; right: -3%; transform: rotate(-10deg) scale(0.9); z-index: 2;}
+        .p6 { bottom: 15%; right: 4%; transform: rotate(25deg); }
+
+        /* Main Content Styling adjustments for readability */
+        h1 {
+            color: #e11d48;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.3;
+            position: relative;
+            /* Adds a glow so text is readable over photos */
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 30px rgba(255, 255, 255, 0.7);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 50px;
+            color: #71717a;
+            margin-top: 15px;
+            position: relative;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+        }
+
+        /* Love Letter Grid Layout */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Envelope Design */
+        .letter-card {
+            background: white;
+            height: 200px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(225, 29, 72, 0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed #fbcfe8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .letter-card:hover {
+            transform: translateY(-12px);
+            background-color: #fff1f2;
+            border-color: #e11d48;
+            box-shadow: 0 15px 35px rgba(225, 29, 72, 0.25);
+        }
+
+        .envelope-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .letter-card:hover .envelope-icon {
+            transform: scale(1.1);
+        }
+
+        .letter-label {
+            font-weight: bold;
+            color: #e11d48;
+            font-size: 1.3rem;
+        }
+
+        /* MODAL OVERLAYS */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.85); /* Slightly more transparent for bg photos */
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        /* --- TRIVIA LOCK MODAL --- */
+        .trivia-content {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(225, 29, 72, 0.2);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            border: 2px solid #fbcfe8;
+        }
+
+        .lock-icon {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+        }
+
+        .trivia-question {
+            font-size: 1.4rem;
+            color: #e11d48;
+            font-weight: bold;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .trivia-input {
+            width: 80%;
+            padding: 12px 15px;
+            font-size: 1.1rem;
+            border: 2px solid #fbcfe8;
+            border-radius: 10px;
+            outline: none;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4a4a4a;
+            transition: border-color 0.3s;
+        }
+
+        .trivia-input:focus {
+            border-color: #e11d48;
+        }
+
+        .error-msg {
+            color: #e11d48;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            height: 20px; /* Keeps layout from jumping */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* Shake Animation for wrong answers */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        .shake { animation: shake 0.4s; }
+
+        /* --- LETTER POP-OUT MODAL --- */
+        .modal-content {
+            background-color: #fffaf0;
+            background-image: repeating-linear-gradient(transparent, transparent 39px, #e5e7eb 39px, #e5e7eb 40px);
+            padding: 60px 40px;
+            border-radius: 15px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+            max-width: 1200px; 
+            width: 90%;
+            max-height: 90vh; 
+            overflow-y: auto; 
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px; right: 30px;
+            font-size: 2rem;
+            color: #a1a1aa;
+            cursor: pointer;
+            background: none; border: none; outline: none;
+            z-index: 10;
+        }
+
+        .close-btn:hover { color: #e11d48; }
+
+        .modal-img {
+            max-width: 100%;
+            max-height: 550px; 
+            object-fit: contain;
+            border: 12px solid white;
+            border-bottom: 40px solid white; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            margin: 0 auto 30px auto;
+            display: block;
+            transform: rotate(-1deg);
+        }
+
+        .modal-text {
+            font-family: 'Georgia', serif; 
+            font-size: 1.8rem; 
+            line-height: 1.8;
+            color: #3f3f46;
+            background: rgba(255, 255, 255, 0.8); 
+            padding: 20px;
+            border-radius: 10px;
+            opacity: 0; 
+            transition: opacity 1.5s ease-in; 
+        }
+
+        /* Shared Button Styles */
+        .action-btn {
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+            background-color: #e11d48;
+            color: white;
+            box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
+        }
+        
+        .action-btn:hover { 
+            transform: scale(1.05); 
+            background-color: #be123c;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+            min-height: 60px;
+            position: relative;
+            opacity: 0; 
+            transition: opacity 1.5s ease-in;
+        }
+        
+        #noBtn {
+            background-color: #f4f4f5;
+            color: #71717a;
+            box-shadow: none;
+        }
+
+        #finalMessage {
+            display: none;
+            color: #e11d48;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-top: 40px;
+            font-family: 'Georgia', serif;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-collage">
+        <img src="bg1.jpg" class="bg-photo p1" alt="">
+        <img src="bg2.jpg" class="bg-photo p2" alt="">
+        <img src="bg3.jpg" class="bg-photo p3" alt="">
+        <img src="bg4.jpg" class="bg-photo p4" alt="">
+        <img src="bg5.jpg" class="bg-photo p5" alt="">
+        <img src="bg6.jpg" class="bg-photo p6" alt="">
+    </div>
+
+    <h1>I am sorry this was a 6 month wala thing but i felt we needed this 🥺</h1>
+    <div class="subtitle">Answer the questions to unlock our memories...</div>
+
+    <div class="gallery">
+        <div class="letter-card" onclick="openTrivia(1)">
+            <div class="envelope-icon">💌</div>
+            <div class="letter-label">Letter #1</div>
+        </div>
+        <div class="letter-card" onclick="openTrivia(2)">
+            <div class="envelope-icon">💌</div>
+            <div class="letter-label">Letter #2</div>
+        </div>
+        <div class="letter-card" onclick="openTrivia(3)">
+            <div class="envelope-icon">💌</div>
+            <div class="letter-label">Letter #3</div>
+        </div>
+        <div class="letter-card" onclick="openTrivia(4)">
+            <div class="envelope-icon">💌</div>
+            <div class="letter-label">Letter #4</div>
+        </div>
+        <div class="letter-card" onclick="openTrivia(5)">
+            <div class="envelope-icon">💌</div>
+            <div class="letter-label">Letter #5</div>
+        </div>
+        <div class="letter-card" onclick="openTrivia(6)">
+            <div class="envelope-icon">❤️</div>
+            <div class="letter-label">Read Me Last</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="triviaOverlay">
+        <div class="trivia-content" id="triviaContent">
+            <button class="close-btn" onclick="closeTrivia()">✖</button>
+            <div class="lock-icon">🔒</div>
+            <div class="trivia-question" id="triviaQuestion">Question goes here?</div>
+            <input type="text" id="triviaInput" class="trivia-input" placeholder="Type your answer..." onkeypress="handleEnter(event)">
+            <br>
+            <button class="action-btn" onclick="checkAnswer()">Unlock 🔓</button>
+            <div class="error-msg" id="errorMsg">Oops! That's not right. Try again! 🥺</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content" id="modalContent">
+            <button class="close-btn" onclick="closeNote()">✖</button>
+            <img src="" alt="Note Photo" class="modal-img" id="modalImg">
+            <div class="modal-text" id="modalText"></div>
+            
+            <div class="buttons" id="questionButtons" style="display: none;">
+                <button class="action-btn" id="yesBtn" onclick="forgiven()">Yes, I forgive you</button>
+                <button class="action-btn" id="noBtn" onmouseover="dodge()">No</button>
+            </div>
+            <div id="finalMessage">Yay! I love you! 🥰💖</div>
+        </div>
+    </div>
+
+    <script>
+        // YOUR NOTES & TRIVIA GO HERE!
+        // Remember: Answers should be simple. The code ignores capitals and spaces.
+        const notesData = {
+            1: { 
+                question: "Where did we go for our first date?", 
+                answer: "starbucks", 
+                img: "photo1.jpg", 
+                text: "I was so nervous that day, but the moment I saw you, I knew you were special." 
+            },
+            2: { 
+                question: "What is my favorite color?", 
+                answer: "blue", 
+                img: "photo2.jpg", 
+                text: "Note 2 text goes here." 
+            },
+            3: { 
+                question: "What month did we officially start dating?", 
+                answer: "august", 
+                img: "photo3.jpg", 
+                text: "Note 3 text goes here." 
+            },
+            4: { 
+                question: "Who said 'I love you' first?", 
+                answer: "me", 
+                img: "photo4.jpg", 
+                text: "Note 4 text goes here." 
+            },
+            5: { 
+                question: "What is your favorite food that we eat together?", 
+                answer: "sushi", 
+                img: "photo5.jpg", 
+                text: "Note 5 text goes here." 
+            },
+            6: { 
+                question: "How many months have we been together?", 
+                answer: "6", 
+                img: "photo6.jpg", 
+                text: "<strong>Will you please forgive me?</strong>" 
+            }
+        };
+
+        // --- TRIVIA LOGIC ---
+        const triviaOverlay = document.getElementById('triviaOverlay');
+        const triviaContent = document.getElementById('triviaContent');
+        const triviaQuestion = document.getElementById('triviaQuestion');
+        const triviaInput = document.getElementById('triviaInput');
+        const errorMsg = document.getElementById('errorMsg');
+        let currentLetterId = null;
+
+        function openTrivia(noteId) {
+            currentLetterId = noteId;
+            triviaQuestion.innerText = notesData[noteId].question;
+            triviaInput.value = ''; 
+            errorMsg.style.opacity = '0'; 
+            
+            triviaOverlay.style.display = 'flex';
+            setTimeout(() => {
+                triviaOverlay.style.opacity = '1';
+                triviaContent.style.transform = 'scale(1)';
+                triviaInput.focus(); 
+            }, 10);
+        }
+
+        function closeTrivia() {
+            triviaOverlay.style.opacity = '0';
+            triviaContent.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                triviaOverlay.style.display = 'none';
+            }, 400);
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        }
+
+        function checkAnswer() {
+            const userAnswer = triviaInput.value.toLowerCase().trim();
+            const correctAnswer = notesData[currentLetterId].answer.toLowerCase().trim();
+
+            if (userAnswer === correctAnswer) {
+                closeTrivia();
+                setTimeout(() => {
+                    openNote(currentLetterId);
+                }, 400); 
+            } else {
+                errorMsg.style.opacity = '1';
+                triviaContent.classList.remove('shake');
+                void triviaContent.offsetWidth; 
+                triviaContent.classList.add('shake');
+            }
+        }
+
+        // --- LETTER POP-OUT LOGIC ---
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalContent = document.getElementById('modalContent');
+        const modalImg = document.getElementById('modalImg');
+        const modalText = document.getElementById('modalText');
+        const questionButtons = document.getElementById('questionButtons');
+        const finalMessage = document.getElementById('finalMessage');
+
+        function openNote(noteId) {
+            modalImg.src = notesData[noteId].img;
+            modalText.innerHTML = notesData[noteId].text;
+
+            modalText.style.opacity = '0';
+            questionButtons.style.opacity = '0';
+
+            if (noteId === 6) {
+                questionButtons.style.display = 'flex';
+                finalMessage.style.display = 'none';
+                document.getElementById('noBtn').style.position = 'relative'; 
+                document.getElementById('noBtn').style.display = 'inline-block';
+                document.getElementById('yesBtn').style.display = 'inline-block';
+            } else {
+                questionButtons.style.display = 'none';
+                finalMessage.style.display = 'none';
+            }
+
+            modalOverlay.style.display = 'flex';
+            setTimeout(() => {
+                modalOverlay.style.opacity = '1';
+                modalContent.style.transform = 'scale(1)';
+                
+                setTimeout(() => {
+                    modalText.style.opacity = '1';
+                    if(noteId === 6) {
+                        questionButtons.style.opacity = '1';
+                    }
+                }, 1500); 
+            }, 10);
+        }
+
+        function closeNote() {
+            modalOverlay.style.opacity = '0';
+            modalContent.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                modalOverlay.style.display = 'none';
+            }, 400);
+        }
+
+        // --- RUNAWAY BUTTON LOGIC ---
+        function dodge() {
+            const btn = document.getElementById('noBtn');
+            const overlayBounds = modalContent.getBoundingClientRect();
+            
+            const maxX = overlayBounds.width - btn.offsetWidth - 40;
+            const maxY = overlayBounds.height - btn.offsetHeight - 40;
+            
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+            
+            btn.style.position = 'absolute';
+            btn.style.left = `${randomX}px`;
+            btn.style.top = `${randomY}px`;
+        }
+
+        function forgiven() {
+            modalText.style.display = 'none';
+            questionButtons.style.display = 'none';
+            finalMessage.style.display = 'block';
+            document.querySelector('.close-btn').style.display = 'none'; 
+        }
+    </script>
+</body>
+</html>
