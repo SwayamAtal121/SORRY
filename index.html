@@ -8,7 +8,7 @@
         body {
             margin: 0;
             padding: 40px 20px;
-            background-color: #fff9fb; /* Slightly warmer off-white */
+            background-color: #fff9fb; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
             color: #4a4a4a;
@@ -24,67 +24,33 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0; /* Sitting just above body bg */
+            z-index: 0; 
             pointer-events: none; 
         }
 
         .bg-photo {
             position: absolute;
-            width: 18vw; /* Slightly smaller to reduce crowding */
+            width: 18vw; 
             max-width: 200px; 
             height: auto;
-            border: 10px solid white; /* Thicker, nicer border */
-            /* Deeper, softer shadow for a better look */
+            border: 10px solid white; 
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
             transition: transform 0.3s ease;
-            opacity: 0.92; /* Clearer photos */
+            opacity: 0.92; 
         }
 
-        /* --- NEW CLEANER POSITIONING (Less Overlap) --- */
-        
-        /* Left Side - Spread out vertically */
-        .p1 { 
-            top: 2%; 
-            left: 2%; 
-            transform: rotate(-8deg); 
-        }
-        .p2 { 
-            top: 50%; 
-            left: -2%; 
-            /* Centers it vertically and gives a gentle tilt */
-            transform: translateY(-50%) rotate(5deg); 
-            z-index: 2;
-        }
-        .p3 { 
-            bottom: 5%; 
-            left: 3%; 
-            transform: rotate(-12deg); 
-        }
-
-        /* Right Side - Spread out vertically */
-        .p4 { 
-            top: 4%; 
-            right: 2%; 
-            transform: rotate(10deg); 
-        }
-        .p5 { 
-            top: 50%; 
-            right: -3%; 
-            /* Centers it vertically */
-            transform: translateY(-50%) rotate(-7deg); 
-            z-index: 2;
-        }
-        .p6 { 
-            bottom: 8%; 
-            right: 4%; 
-            transform: rotate(15deg); 
-        }
-
+        /* --- CLEANER POSITIONING --- */
+        .p1 { top: 2%; left: 2%; transform: rotate(-8deg); }
+        .p2 { top: 50%; left: -2%; transform: translateY(-50%) rotate(5deg); z-index: 2;}
+        .p3 { bottom: 5%; left: 3%; transform: rotate(-12deg); }
+        .p4 { top: 4%; right: 2%; transform: rotate(10deg); }
+        .p5 { top: 50%; right: -3%; transform: translateY(-50%) rotate(-7deg); z-index: 2;}
+        .p6 { bottom: 8%; right: 4%; transform: rotate(15deg); }
 
         /* --- MAIN CONTENT STYLES --- */
         .content-wrapper {
             position: relative;
-            z-index: 10; /* Ensures text and letters are above photos */
+            z-index: 10; 
         }
 
         h1 {
@@ -95,7 +61,6 @@
             margin-left: auto;
             margin-right: auto;
             line-height: 1.3;
-            /* Stronger glow for readability against clearer photos */
             text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 10px rgba(255, 255, 255, 1);
         }
 
@@ -117,7 +82,7 @@
         }
 
         .letter-card {
-            background: rgba(255, 255, 255, 0.95); /* Almost solid white so they pop */
+            background: rgba(255, 255, 255, 0.95); 
             height: 200px;
             border-radius: 10px;
             box-shadow: 0 8px 25px rgba(225, 29, 72, 0.15);
@@ -160,7 +125,7 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(8px); /* Stronger blur to hide background photos when modal is open */
+            backdrop-filter: blur(8px); 
             display: none;
             justify-content: center;
             align-items: center;
@@ -400,41 +365,41 @@
     </div>
 
     <script>
-        // MAKE SURE TO UPDATE YOUR TRIVIA AND NOTES HERE!
+        // TRIVIA AND NOTES DATA UPDATED!
         const notesData = {
             1: { 
-                question: "Where did we go for our first date?", 
-                answer: "starbucks", 
+                question: "What nickname do I find lovely.", 
+                answer: "sim", 
                 img: "photo1.jpeg", 
-                text: "I was so nervous that day, but the moment I saw you, I knew you were special." 
+                text: "Note 1 text goes here." 
             },
             2: { 
-                question: "What is my favorite color?", 
-                answer: "blue", 
+                question: "What nickname do you find lovely", 
+                answer: "gubba", 
                 img: "photo2.jpeg", 
                 text: "Note 2 text goes here." 
             },
             3: { 
-                question: "What month did we officially start dating?", 
-                answer: "august", 
+                question: "What month did we start dating 😛? I'm still not sure.", 
+                answer: "september", 
                 img: "photo3.jpeg", 
                 text: "Note 3 text goes here." 
             },
             4: { 
-                question: "Who said 'I love you' first?", 
-                answer: "me", 
+                question: "Where did we hug? It was great but still", 
+                answer: "mall parking", 
                 img: "photo4.jpeg", 
                 text: "Note 4 text goes here." 
             },
             5: { 
-                question: "What is your favorite food that we eat together?", 
-                answer: "sushi", 
+                question: "Who Said Ily first?", 
+                answer: "swayam", 
                 img: "photo5.jpeg", 
                 text: "Note 5 text goes here." 
             },
             6: { 
-                question: "How many months have we been together?", 
-                answer: "6", 
+                question: "I am sorry. Are we over it?", 
+                answer: "yes", 
                 img: "photo6.jpeg", 
                 text: "<strong>Will you please forgive me?</strong>" 
             }
