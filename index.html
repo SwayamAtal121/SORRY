@@ -8,43 +8,84 @@
         body {
             margin: 0;
             padding: 40px 20px;
-            background-color: #fff5f7; 
+            background-color: #fff9fb; /* Slightly warmer off-white */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
             color: #4a4a4a;
             min-height: 100vh;
             overflow-x: hidden; 
+            position: relative;
         }
 
-        /* --- BACKGROUND COLLAGE STYLES --- */
+        /* --- IMPROVED BACKGROUND COLLAGE STYLES --- */
         .background-collage {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; 
+            z-index: 0; /* Sitting just above body bg */
             pointer-events: none; 
         }
 
         .bg-photo {
             position: absolute;
-            width: 20vw; 
-            max-width: 220px; 
+            width: 18vw; /* Slightly smaller to reduce crowding */
+            max-width: 200px; 
             height: auto;
-            border: 8px solid white; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border: 10px solid white; /* Thicker, nicer border */
+            /* Deeper, softer shadow for a better look */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
             transition: transform 0.3s ease;
-            opacity: 0.85; 
+            opacity: 0.92; /* Clearer photos */
         }
 
-        /* --- ASYMMETRICAL POSITIONING --- */
-        .p1 { top: 5%; left: -2%; transform: rotate(-15deg); }
-        .p2 { top: 40%; left: 3%; transform: rotate(8deg) scale(1.1); z-index: 2;}
-        .p3 { bottom: 10%; left: 0%; transform: rotate(-20deg); }
-        .p4 { top: 8%; right: 1%; transform: rotate(12deg); }
-        .p5 { top: 45%; right: -3%; transform: rotate(-10deg) scale(0.9); z-index: 2;}
-        .p6 { bottom: 15%; right: 4%; transform: rotate(25deg); }
+        /* --- NEW CLEANER POSITIONING (Less Overlap) --- */
+        
+        /* Left Side - Spread out vertically */
+        .p1 { 
+            top: 2%; 
+            left: 2%; 
+            transform: rotate(-8deg); 
+        }
+        .p2 { 
+            top: 50%; 
+            left: -2%; 
+            /* Centers it vertically and gives a gentle tilt */
+            transform: translateY(-50%) rotate(5deg); 
+            z-index: 2;
+        }
+        .p3 { 
+            bottom: 5%; 
+            left: 3%; 
+            transform: rotate(-12deg); 
+        }
+
+        /* Right Side - Spread out vertically */
+        .p4 { 
+            top: 4%; 
+            right: 2%; 
+            transform: rotate(10deg); 
+        }
+        .p5 { 
+            top: 50%; 
+            right: -3%; 
+            /* Centers it vertically */
+            transform: translateY(-50%) rotate(-7deg); 
+            z-index: 2;
+        }
+        .p6 { 
+            bottom: 8%; 
+            right: 4%; 
+            transform: rotate(15deg); 
+        }
+
+
+        /* --- MAIN CONTENT STYLES --- */
+        .content-wrapper {
+            position: relative;
+            z-index: 10; /* Ensures text and letters are above photos */
+        }
 
         h1 {
             color: #e11d48;
@@ -54,8 +95,8 @@
             margin-left: auto;
             margin-right: auto;
             line-height: 1.3;
-            position: relative;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 30px rgba(255, 255, 255, 0.7);
+            /* Stronger glow for readability against clearer photos */
+            text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 10px rgba(255, 255, 255, 1);
         }
 
         .subtitle {
@@ -63,8 +104,8 @@
             margin-bottom: 50px;
             color: #71717a;
             margin-top: 15px;
-            position: relative;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+            font-weight: bold;
         }
 
         .gallery {
@@ -73,11 +114,10 @@
             gap: 40px;
             max-width: 1000px;
             margin: 0 auto;
-            position: relative;
         }
 
         .letter-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.95); /* Almost solid white so they pop */
             height: 200px;
             border-radius: 10px;
             box-shadow: 0 8px 25px rgba(225, 29, 72, 0.15);
@@ -94,7 +134,7 @@
 
         .letter-card:hover {
             transform: translateY(-12px);
-            background-color: #fff1f2;
+            background-color: #fff;
             border-color: #e11d48;
             box-shadow: 0 15px 35px rgba(225, 29, 72, 0.25);
         }
@@ -115,11 +155,12 @@
             font-size: 1.3rem;
         }
 
+        /* MODAL OVERLAYS */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px); /* Stronger blur to hide background photos when modal is open */
             display: none;
             justify-content: center;
             align-items: center;
@@ -300,33 +341,35 @@
         <img src="bg6.jpeg" class="bg-photo p6" alt="">
     </div>
 
-    <h1>I am sorry this was a 6 month wala thing but i felt we needed this 🥺</h1>
-    <div class="subtitle">Answer the questions to unlock our memories...</div>
+    <div class="content-wrapper">
+        <h1>I am sorry this was a 6 month wala thing but i felt we needed this 🥺</h1>
+        <div class="subtitle">Answer the questions to unlock our memories...</div>
 
-    <div class="gallery">
-        <div class="letter-card" onclick="openTrivia(1)">
-            <div class="envelope-icon">💌</div>
-            <div class="letter-label">Letter #1</div>
-        </div>
-        <div class="letter-card" onclick="openTrivia(2)">
-            <div class="envelope-icon">💌</div>
-            <div class="letter-label">Letter #2</div>
-        </div>
-        <div class="letter-card" onclick="openTrivia(3)">
-            <div class="envelope-icon">💌</div>
-            <div class="letter-label">Letter #3</div>
-        </div>
-        <div class="letter-card" onclick="openTrivia(4)">
-            <div class="envelope-icon">💌</div>
-            <div class="letter-label">Letter #4</div>
-        </div>
-        <div class="letter-card" onclick="openTrivia(5)">
-            <div class="envelope-icon">💌</div>
-            <div class="letter-label">Letter #5</div>
-        </div>
-        <div class="letter-card" onclick="openTrivia(6)">
-            <div class="envelope-icon">❤️</div>
-            <div class="letter-label">Read Me Last</div>
+        <div class="gallery">
+            <div class="letter-card" onclick="openTrivia(1)">
+                <div class="envelope-icon">💌</div>
+                <div class="letter-label">Letter #1</div>
+            </div>
+            <div class="letter-card" onclick="openTrivia(2)">
+                <div class="envelope-icon">💌</div>
+                <div class="letter-label">Letter #2</div>
+            </div>
+            <div class="letter-card" onclick="openTrivia(3)">
+                <div class="envelope-icon">💌</div>
+                <div class="letter-label">Letter #3</div>
+            </div>
+            <div class="letter-card" onclick="openTrivia(4)">
+                <div class="envelope-icon">💌</div>
+                <div class="letter-label">Letter #4</div>
+            </div>
+            <div class="letter-card" onclick="openTrivia(5)">
+                <div class="envelope-icon">💌</div>
+                <div class="letter-label">Letter #5</div>
+            </div>
+            <div class="letter-card" onclick="openTrivia(6)">
+                <div class="envelope-icon">❤️</div>
+                <div class="letter-label">Read Me Last</div>
+            </div>
         </div>
     </div>
 
@@ -357,7 +400,7 @@
     </div>
 
     <script>
-        // Updated to .jpeg!
+        // MAKE SURE TO UPDATE YOUR TRIVIA AND NOTES HERE!
         const notesData = {
             1: { 
                 question: "Where did we go for our first date?", 
